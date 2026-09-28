@@ -10,12 +10,12 @@ import (
 )
 
 type City struct {
-	TokenID   int64
-	CityName  string
-	Latitude  int64
-	Longitude int64
-	FromDate  int64
-	ToDate    int64
+	TokenID   int64  `json:"tokenId"`
+	CityName  string `json:"cityName"`
+	Latitude  int64  `json:"latitude"`
+	Longitude int64  `json:"longitude"`
+	FromDate  int64  `json:"fromDate"`
+	ToDate    int64  `json:"toDate"`
 }
 
 func main() {
@@ -45,6 +45,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	server := NewServer(db)
+	log.Fatal(server.Start(":8080"))
 }
 
 func connectClient(link string) (*ethclient.Client, error) {
