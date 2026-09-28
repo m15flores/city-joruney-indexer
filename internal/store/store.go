@@ -1,12 +1,14 @@
-package main
+package store
 
 import (
 	"database/sql"
 
+	"city-journey-indexer/internal/model"
+
 	_ "modernc.org/sqlite"
 )
 
-func openDB(path string) (*sql.DB, error) {
+func Open(path string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return nil, err
@@ -29,7 +31,7 @@ func openDB(path string) (*sql.DB, error) {
 	return db, nil
 }
 
-func insertCities(db *sql.DB, cities []City) error {
+func InsertCities(db *sql.DB, cities []model.City) error {
 
 	for _, city := range cities {
 		_, err := db.Exec(`
@@ -44,17 +46,17 @@ func insertCities(db *sql.DB, cities []City) error {
 	return nil
 }
 
-func getAllCities(db *sql.DB) ([]City, error) {
+func GetAllCities(db *sql.DB) ([]model.City, error) {
 	rows, err := db.Query("SELECT id, cityName, latitude, longitude, fromDate, toDate FROM cities ORDER BY Id")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	cities := []City{}
+	cities := []model.City{}
 
 	for rows.Next() {
-		var city City
+		var city model.City
 		if err := rows.Scan(&city.TokenID, &city.CityName, &city.Latitude,
 			&city.Longitude, &city.FromDate, &city.ToDate); err != nil {
 
@@ -68,9 +70,9 @@ func getAllCities(db *sql.DB) ([]City, error) {
 	return cities, nil
 }
 
-func getCityByID(db *sql.DB, id int64) (City, error) {
+func GetCityByID(db *sql.DB, id int64) (model.City, error) {
 	row := db.QueryRow("SELECT id, cityName, latitude, longitude, fromDate, toDate FROM cities WHERE id = ?", id)
-	var city City
+	var city model.City
 
 	if err := row.Scan(&city.TokenID, &city.CityName, &city.Latitude,
 		&city.Longitude, &city.FromDate, &city.ToDate); err != nil {
@@ -81,9 +83,9 @@ func getCityByID(db *sql.DB, id int64) (City, error) {
 	return city, nil
 }
 
-func getCityAt(db *sql.DB, at int64) (City, error) {
+func GetCityAt(db *sql.DB, at int64) (model.City, error) {
 	row := db.QueryRow("SELECT id, cityName, latitude, longitude, fromDate, toDate FROM cities WHERE fromDate <= ? AND (toDate > ? OR toDate = 0)", at, at)
-	var city City
+	var city model.City
 
 	if err := row.Scan(&city.TokenID, &city.CityName, &city.Latitude,
 		&city.Longitude, &city.FromDate, &city.ToDate); err != nil {
@@ -94,17 +96,17 @@ func getCityAt(db *sql.DB, at int64) (City, error) {
 	return city, nil
 }
 
-func getCitiesBetween(db *sql.DB, from int64, to int64) ([]City, error) {
+func GetCitiesBetween(db *sql.DB, from int64, to int64) ([]model.City, error) {
 	rows, err := db.Query("SELECT id, cityName, latitude, longitude, fromDate, toDate FROM cities WHERE fromDate < ? AND (toDate > ? OR toDate = 0) ORDER BY Id", to, from)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	cities := []City{}
+	cities := []model.City{}
 
 	for rows.Next() {
-		var city City
+		var city model.City
 		if err := rows.Scan(&city.TokenID, &city.CityName, &city.Latitude,
 			&city.Longitude, &city.FromDate, &city.ToDate); err != nil {
 

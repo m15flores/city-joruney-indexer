@@ -1,6 +1,7 @@
-package main
+package api
 
 import (
+	"city-journey-indexer/internal/store"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -46,7 +47,7 @@ func (s *Server) handleGetCities(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) respondAllCities(w http.ResponseWriter) {
-	response, err := getAllCities(s.db)
+	response, err := store.GetAllCities(s.db)
 	if err != nil {
 		http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		return
@@ -62,7 +63,7 @@ func (s *Server) respondCityAt(w http.ResponseWriter, atStr string) {
 		return
 	}
 
-	response, err := getCityAt(s.db, at)
+	response, err := store.GetCityAt(s.db, at)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			http.Error(w, "Not Found", http.StatusNotFound)
@@ -98,7 +99,7 @@ func (s *Server) respondCitiesBetween(w http.ResponseWriter, fromStr string, toS
 		return
 	}
 
-	response, err := getCitiesBetween(s.db, from, to)
+	response, err := store.GetCitiesBetween(s.db, from, to)
 	if err != nil {
 		http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		return
@@ -116,7 +117,7 @@ func (s *Server) handleGetCityByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := getCityByID(s.db, id)
+	response, err := store.GetCityByID(s.db, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			http.Error(w, "Not Found", http.StatusNotFound)

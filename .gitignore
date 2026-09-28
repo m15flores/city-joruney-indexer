@@ -35,3 +35,4 @@ go.work.sum
 *.db
 *.db-journal
 city-journey-indexer
+bin/
