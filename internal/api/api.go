@@ -124,7 +124,7 @@ func (s *Server) handleGetCityByID(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.Error(w, "Something wrong happened", http.StatusBadRequest)
+		http.Error(w, "Something wrong happened", http.StatusInternalServerError)
 		return
 	}
 
